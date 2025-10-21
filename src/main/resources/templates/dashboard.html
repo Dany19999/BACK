@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Administración</title>
+</head>
+<body>
+    <h1>PANEL DE ADMINISTRADOR: SANTRIX</h1>
+    
+    <p>Has iniciado sesión con el rol de: ADMINISTRADOR DEL SISTEMA EMPRESARIAL SANTRIX
+        <span sec:authentication="authorities"></span>
+    </p>
+    
+    <p>Tu sistema de seguridad y base de datos están integrados.</p>
+
+    <nav>
+        <ul>
+            <li><a th:href="@{/admin/users}">Administrar Usuarios (CRUD)</a></li>
+            
+            <li><a th:href="@{/admin/attendance/view}">Ver Registros de Asistencia</a></li>
+            <li><a th:href="@{/admin/attendance/reports}">Generar Reportes Globales</a></li>
+
+            
+            <li><a th:href="@{/documents/admin/all}">Revisar Documentos y Trabajos</a></li>
+
+
+            
+            <li>
+                <form th:action="@{/logout}" method="post">
+                    <button type="submit">Cerrar Sesión</button>
+                </form>
+            </li>
+        </ul>
+    </nav>
+    </body>
+</html>

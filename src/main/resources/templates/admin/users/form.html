@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="${title}"></title>
+</head>
+<body>
+    <h1 th:text="${title}"></h1>
+
+    <form th:action="@{/admin/users}" th:object="${user}" method="post">
+    
+        <input type="hidden" name="id" th:value="${user.id}">
+
+        <div>
+            <label for="username">Nombre de Usuario:</label>
+            <input type="text" id="username" th:field="*{username}" required>
+        </div>
+
+        <div>
+            <label for="password">Contraseña (Solo si se cambia):</label>
+            <input type="password"
+                    id="password"
+                    th:field="*{password}"
+                th:required="${user.id == null}"
+                >
+        </div>
+
+        
+        <div>
+            <label for="cargo">Cargo:</label>
+            <input type="text" id="cargo" th:field="*{cargo}" required>
+        </div>
+
+        <div>
+            <label for="role">Rol:</label>
+            <select id="role" th:field="*{role}">
+                <option value="ADMIN">ADMIN</option>
+                <option value="USER">USER</option>
+            </select>
+        </div>
+
+        <button type="submit">Guardar Usuario</button>
+    </form>
+
+    <p><a th:href="@{/admin/users}">Volver a la Lista</a></p>
+</body>
+</html>

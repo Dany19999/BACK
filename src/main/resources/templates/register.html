@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro de Empleados</title>
+</head>
+<body>
+    <h1>Registro de Empleados</h1>
+    
+    <form th:action="@{/register}" th:object="${user}" method="post">
+        
+        <input type="hidden" th:field="*{id}">
+        
+        <div>
+            <label for="username">Nombre de Usuario:</label>
+            <input type="text" id="username" th:field="*{username}" required>
+        </div>
+
+        <div>
+            <label for="password">Contraseña:</label>
+            <input type="password" id="password" th:field="*{password}" required> 
+        </div>
+
+        <input type="hidden" th:field="*{cargo}"> 
+        <input type="hidden" th:field="*{role}"> 
+
+        <button type="submit">Registrar Cuenta</button>
+    </form>
+
+    <p><a th:href="@{/login}">Volver al Inicio de Sesión</a></p>
+</body>
+</html>

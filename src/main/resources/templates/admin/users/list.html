@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión de Usuarios</title>
+</head>
+<body>
+    <h1>Gestión de Usuarios</h1>
+    
+    <p><a th:href="@{/admin/users/new}">Añadir Nuevo Usuario</a></p>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre de Usuario</th>
+                <th>Rol</th>
+                <th>Cargo</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="user : ${users}">
+                <td th:text="${user.id}">1</td>
+                <td th:text="${user.username}">admin</td>
+                <td th:text="${user.role}">ADMIN</td>
+                <td th:text="${user.cargo}">Gerente</td>
+                <td>
+                    <a th:href="@{/admin/users/edit/{id}(id=${user.id})}">Editar</a> | 
+                    <a th:href="@{/admin/users/delete/{id}(id=${user.id})}" 
+                    onclick="return confirm('¿Estás seguro?');">Eliminar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <form th:action="@{/logout}" method="post"><button type="submit">Cerrar Sesión</button></form>
+</body>
+</html>

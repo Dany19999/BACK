@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel de Empleado - Asistencia</title>
+    <style>
+        /* Estilos que definiste */
+        body { font-family: sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 90%; margin: 20px 0; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .success { color: #198754; font-weight: bold; }
+        .error { color: #dc3545; font-weight: bold; }
+        .btn-green { background-color: #198754; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .btn-red { background-color: #dc3545; color: white; padding: 10px 20px; border: none; cursor: pointer; }
+        .btn-grey { background-color: #6c757d; color: white; padding: 5px 15px; border: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Bienvenido a tu Panel, Empleado</h1>
+    
+    <p>Has iniciado sesión como: 
+        <span sec:authentication="name"></span> 
+        (<span sec:authentication="authorities"></span>)
+    </p>
+
+    <div th:if="${message}" class="success" th:text="${message}">Mensaje de éxito aquí.</div>
+    <div th:if="${error}" class="error" th:text="${error}">Mensaje de error aquí.</div>
+    
+    
+    <h2>Control de Horario</h2>
+    
+    <form th:action="@{/user/action/entry}" method="post" style="display: inline; margin-right: 10px;">
+        <button type="submit" class="btn-green">MARCAR ENTRADA</button>
+    </form>
+
+    <form th:action="@{/user/action/exit}" method="post" style="display: inline;">
+        <button type="submit" class="btn-red">MARCAR SALIDA</button>
+    </form>
+    
+    <hr>
+    
+    <h3>Mi Historial de Asistencia</h3>
+
+    <table th:if="${!personalRecords.empty}">
+        <thead>
+            <tr>
+                <th>Entrada</th>
+                <th>Salida</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="record : ${personalRecords}">
+                <td th:text="${#temporals.format(record.entryTime, 'dd-MM-yyyy HH:mm')}"></td>
+                
+                <td th:text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM-yyyy HH:mm') : '---'}"></td>
+                
+                <td>
+                    <span th:if="${record.exitTime == null}" class="success">SESIÓN ACTIVA</span>
+                    <span th:if="${record.exitTime != null}" style="color: blue;">Completo</span>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p><a th:href="@{/documents/upload}">Subir Documentos y Trabajos</a></p>
+
+    <p th:if="${personalRecords.empty}" style="color: gray;">Aún no tienes registros de asistencia en la base de datos.</p>
+    <br><br>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit" class="btn-grey">Cerrar Sesión</button>
+    </form>
+</body>
+</html>

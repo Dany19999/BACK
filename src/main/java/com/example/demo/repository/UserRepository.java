@@ -1,7 +1,10 @@
-package com.example.demo;
+package com.example.demo.repository;
+
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import java.util.Optional;
+
+import com.example.demo.entity.User;
 
 // JpaRepository da métodos CRUD automáticos. <Entidad, TipoID>
 public interface UserRepository extends JpaRepository<User, Long> {

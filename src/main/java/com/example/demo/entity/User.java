@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,16 +16,22 @@ public class User {
 
     private String username;
     private String password;
+    private String cargo;
     private String role;     // Ejemplo: "ADMIN" o "USER"
 
     // Constructor vacío (necesario para JPA)
     public User() {}
 
     // Constructor para inicializar
-    public User(String username, String password, String role) {
+    public User(String username, String password, String cargo, String role) {
         this.username = username;
         this.password = password;
+        this.cargo = cargo;
         this.role = role;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     // --- Getters y Setters ---
@@ -48,6 +54,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCargo() {
+        return cargo;
+    }
+
+    public void setCargo(String cargo) {
+        this.cargo = cargo;
     }
 
     public String getRole() {

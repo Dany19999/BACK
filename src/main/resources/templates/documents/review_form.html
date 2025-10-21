@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Formulario de Respuesta</title>
+</head>
+<body>
+    <h1>Revisar Documento ID: <span th:text="${document.id}"></span></h1>
+    <p>Archivo: <span th:text="${document.fileName}"></span> | Subido por: <span th:text="${document.uploadedBy}"></span></p>
+
+    <hr>
+    
+    <form method="POST" th:action="@{/documents/admin/review/{id}(id=${document.id})}">
+        
+        <div>
+            <label for="status">Estado de la Revisión:</label>
+            <select id="status" name="status" required>
+                <option value="">-- Seleccionar --</option>
+                <option th:each="st : ${statuses}" 
+                        th:value="${st}" th:text="${st}" 
+                        th:selected="${st == document.status}">PENDIENTE</option>
+            </select>
+        </div>
+        
+        <div>
+            <label for="feedback">Comentarios y Feedback para el Empleado:</label><br>
+            <textarea id="feedback" name="feedback" rows="5" cols="60" required th:text="${document.adminFeedback}"></textarea>
+        </div>
+        
+        <button type="submit">Enviar Respuesta</button>
+    </form>
+
+    <p><a th:href="@{/documents/admin/all}">Cancelar y Volver</a></p>
+</body>
+</html>

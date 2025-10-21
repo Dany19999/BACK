@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Registros de Asistencia</title>
+</head>
+<body>
+    <h1>Asistencia: Todos los Registros</h1>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID Registro</th>
+                <th>ID Usuario</th>
+                <th>Nombre</th>
+                <th>Hora Entrada</th>
+                <th>Hora Salida</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.id}">1</td>
+                <td th:text="${record.userId}">1</td>
+                <td th:text="${record.userName}">admin</td>
+                <td th:text="${#temporals.format(record.entryTime, 'dd-MM-yyyy HH:mm')}">Fecha</td>
+                <td th:text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM-yyyy HH:mm') : 'Pendiente'}"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p th:if="${records.empty}">No hay registros de asistencia para mostrar.</p>
+    
+    <p><a th:href="@{/admin/dashboard}">Volver al Dashboard</a></p>
+</body>
+</html>

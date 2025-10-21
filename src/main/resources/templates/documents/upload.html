@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Subir Documento de Trabajo</title>
+</head>
+<body>
+    <h1>Subir Documento de Trabajo</h1>
+    
+    <div th:if="${message}" style="color: green;" th:text="${message}"></div>
+    <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+    
+    <form method="POST" th:action="@{/documents/upload}" enctype="multipart/form-data">
+        <input type="file" name="file" required/>
+        <button type="submit">Subir y Enviar</button>
+    </form>
+
+    <hr>
+
+    <h2>Mis Envíos de Documentos</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Nombre de Archivo</th>
+                <th>Estado</th>
+                <th>Feedback del Admin</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="doc : ${documents}">
+                <td th:text="${doc.fileName}"></td>
+                <td th:text="${doc.status}"></td>
+                <td><span th:if="${doc.adminFeedback != null}" th:text="${doc.adminFeedback}"></span><span th:unless="${doc.adminFeedback != null}">PENDIENTE</span></td>
+                <td>
+                    <a th:href="@{/documents/download/{id}(id=${doc.id})}">Descargar</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p><a th:href="@{/user/dashboard}">Volver al Panel Principal</a></p>
+</body>
+</html>

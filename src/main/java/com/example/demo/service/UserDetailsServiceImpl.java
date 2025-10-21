@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.service;
 
 import java.util.Collections;
 import java.util.List;
@@ -10,6 +10,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import com.example.demo.entity.User;
+import com.example.demo.repository.UserRepository;
 
 @Service // 👈 Marca esta clase como un Servicio de Spring
 public class UserDetailsServiceImpl implements UserDetailsService {
@@ -36,5 +39,5 @@ public class UserDetailsServiceImpl implements UserDetailsService {
                 user.getPassword(),
                 authorities
         );
-    }
+       }
 }

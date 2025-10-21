@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión Global de Documentos</title>
+</head>
+<body>
+    <h1>Documentos para Revisión</h1>
+
+    <div th:if="${message}" style="color: green;" th:text="${message}"></div>
+    
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Archivo</th>
+                <th>Subido por</th>
+                <th>Estado</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="doc : ${documents}">
+                <td th:text="${doc.id}"></td>
+                <td th:text="${doc.fileName}"></td>
+                <td th:text="${doc.uploadedBy}"></td>
+                <td th:text="${doc.status}"></td>
+                <td>
+                    <a th:href="@{/documents/download/{id}(id=${doc.id})}">Descargar</a> | 
+                    <a th:href="@{/documents/admin/review/{id}(id=${doc.id})}">Responder</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <p><a th:href="@{/admin/dashboard}">Volver al Dashboard</a></p>
+</body>
+</html>
