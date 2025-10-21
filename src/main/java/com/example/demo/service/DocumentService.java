@@ -21,9 +21,9 @@ public class DocumentService {
     private DocumentRepository documentRepository;
     
     // Directorio donde se guardarán los archivos (debe existir en la raíz)
-    private static final String UPLOAD_DIR = "uploads/"; 
+    private static final String UPLOAD_DIR = "uploads/";
 
-    // Guarda el archivo físicamente y registra los metadatos en la DB
+    // Guarda el archivo físicamente con un nombre único y registra los metadatos en la DB
     public Document uploadFile(MultipartFile file, Long userId, String userName) throws IOException {
         
         Path uploadPath = Paths.get(UPLOAD_DIR);
@@ -31,16 +31,29 @@ public class DocumentService {
             Files.createDirectories(uploadPath); // Crea la carpeta si no existe
         }
 
+        // 1. Obtener el nombre original del archivo para mostrar
         String originalFileName = file.getOriginalFilename();
-        Path filePath = uploadPath.resolve(originalFileName);
+        String extension = "";
         
-        Files.copy(file.getInputStream(), filePath); // Guarda el archivo físico
+        // 2. Extraer la extensión (ej: .pdf, .docx)
+        if (originalFileName != null && originalFileName.contains(".")) {
+            extension = originalFileName.substring(originalFileName.lastIndexOf("."));
+        }
+        
+        // 3. Generar un nombre único basado en UUID (SOLUCIÓN A LA SOBREESCRITURA)
+        String uniqueFileName = java.util.UUID.randomUUID().toString() + extension;
+        
+        // 4. Definir la ruta de guardado con el nombre único
+        Path filePath = uploadPath.resolve(uniqueFileName); 
+        
+        // 5. Guardar el archivo físicamente en el servidor
+        Files.copy(file.getInputStream(), filePath); 
 
-        // Registra los metadatos
+        // 6. Registra los metadatos
         Document doc = new Document();
-        doc.setFileName(originalFileName);
+        doc.setFileName(originalFileName); // Guarda el nombre original para el display
         doc.setFileType(file.getContentType());
-        doc.setStoragePath(filePath.toString());
+        doc.setStoragePath(filePath.toString()); // Guarda la ruta con el nombre ÚNICO
         doc.setUserId(userId);
         doc.setUploadedBy(userName);
         doc.setUploadDate(LocalDateTime.now());
@@ -48,17 +61,17 @@ public class DocumentService {
         return documentRepository.save(doc);
     }
     
-    // Obtiene todos los documentos (para el Administrador)
+    // R: Obtiene todos los documentos (para el Administrador)
     public List<Document> findAllDocuments() {
         return documentRepository.findAll();
     }
     
-    // Obtiene documentos por usuario (para el Empleado)
+    // R: Obtiene documentos por usuario (para el Empleado)
     public List<Document> findDocumentsByUserId(Long userId) {
         return documentRepository.findByUserIdOrderByUploadDateDesc(userId);
     }
 
-    // Obtiene el path físico para descarga
+    // R: Obtiene el path físico para descarga
     public Path getFile(Long documentId) {
         Document doc = documentRepository.findById(documentId).orElse(null);
         if (doc != null) {
@@ -67,13 +80,13 @@ public class DocumentService {
         return null;
     }
     
-    // Lógica para que el Administrador envíe Feedback
+    // U: Lógica para que el Administrador envíe Feedback
     public Document submitFeedback(Long documentId, String feedback, String status, String adminUsername) {
         
         Document doc = documentRepository.findById(documentId)
             .orElseThrow(() -> new RuntimeException("Documento no encontrado: " + documentId));
 
-        doc.setStatus(status); 
+        doc.setStatus(status);
         doc.setAdminFeedback(feedback);
         doc.setReviewedBy(adminUsername);
         doc.setReviewDate(LocalDateTime.now());
