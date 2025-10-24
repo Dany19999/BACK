@@ -59,4 +59,10 @@ public class UserService {
     public void deleteById(Long id) {
         userRepository.deleteById(id);
     }
+
+    // NUEVO MÉTODO DE BÚSQUEDA
+public List<User> searchByUsername(String keyword) {
+    // Llama al repositorio para buscar por la palabra clave
+    return userRepository.findByUsernameContainingIgnoreCase(keyword);
+}
 }
