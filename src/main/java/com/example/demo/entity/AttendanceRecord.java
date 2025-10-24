@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Transient; // IMPORTACIÓN CLAVE
 
 @Entity
 public class AttendanceRecord {
@@ -24,18 +25,20 @@ public class AttendanceRecord {
     // (Opcional) Si quieres rastrear el cargo/nombre actual
     private String userName;
 
-    // Constructores, Getters, y Setters
+    // --- CAMPO CALCULADO ---
+    @Transient // Indica a JPA que este campo NO debe guardarse en la DB (solo se usa en Java)
+    private double durationHours; // Almacena el resultado del cálculo de horas
 
+    // Constructores
     public AttendanceRecord() {}
     
-    // Constructor
     public AttendanceRecord(Long userId, String userName, LocalDateTime entryTime) {
         this.userId = userId;
         this.userName = userName;
         this.entryTime = entryTime;
     }
 
-    // Getters y Setters (Asegúrate de incluir todos los campos)
+    // --- Getters y Setters ---
 
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
@@ -51,4 +54,13 @@ public class AttendanceRecord {
     
     public String getUserName() { return userName; }
     public void setUserName(String userName) { this.userName = userName; }
+
+    // --- Getters y Setters para el Campo Calculado ---
+    public double getDurationHours() {
+        return durationHours;
+    }
+
+    public void setDurationHours(double durationHours) {
+        this.durationHours = durationHours;
+    }
 }

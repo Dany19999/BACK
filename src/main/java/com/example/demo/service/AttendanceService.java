@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import java.time.Duration; // NECESARIO para calcular la duración
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -18,76 +19,95 @@ public class AttendanceService {
     private AttendanceRepository attendanceRepository;
     
     @Autowired
-    private UserRepository userRepository; // Necesario para buscar el ID/Username
+    private UserRepository userRepository;
 
+    // MÉTODO PRIVADO: Calcula la diferencia y la asigna al campo @Transient
+    private void calculateDuration(AttendanceRecord record) {
+        // Solo calcular si la sesión está cerrada (exitTime no es null)
+        if (record.getExitTime() != null) {
+            
+            // 1. Calcula la diferencia de tiempo
+            Duration duration = Duration.between(record.getEntryTime(), record.getExitTime());
+            
+            // 2. Convierte la duración total a horas (con decimales)
+            double hours = duration.toMinutes() / 60.0;
+            
+            // 3. Limita a dos decimales y guarda en el campo transitorio
+            record.setDurationHours(Math.round(hours * 100.0) / 100.0);
+            
+        } else if (record.getUserName() != null && record.getUserName().contains("FALTA AUTOMÁTICA")) {
+            // Manejar el caso de falta para que muestre 0 horas
+            record.setDurationHours(0.0);
+        }
+    }
+
+    // ----------------------------------------------------------------------
+    // MÉTODOS DE LECTURA (APLICAN EL CÁLCULO)
+    // ----------------------------------------------------------------------
+    
     // Lógica para obtener todos los registros (Usado por Admin)
     public List<AttendanceRecord> findAllRecords() {
-        return attendanceRepository.findAll();
+        List<AttendanceRecord> records = attendanceRepository.findAll();
+        for (AttendanceRecord record : records) {
+            calculateDuration(record); // <-- APLICAR CÁLCULO
+        }
+        return records;
     }
     
     // R - Lógica para obtener solo los registros del usuario logueado
     public List<AttendanceRecord> findPersonalRecords(Long userId) {
-        // Usa el método que ordenamos por fecha de entrada (más reciente primero)
-        return attendanceRepository.findByUserIdOrderByEntryTimeDesc(userId);
+        List<AttendanceRecord> records = attendanceRepository.findByUserIdOrderByEntryTimeDesc(userId);
+        for (AttendanceRecord record : records) {
+            calculateDuration(record); // <-- APLICAR CÁLCULO
+        }
+        return records;
     }
 
+    // ----------------------------------------------------------------------
+    // MÉTODOS DE ESCRITURA (NO MODIFICADOS)
+    // ----------------------------------------------------------------------
 
     // C - Lógica para marcar la ENTRADA (Incluye control de sesión abierta)
-    public boolean markEntry(String userName) { // Retorna boolean para indicar éxito/fallo
+    public boolean markEntry(String userName) {
         
-        // 1. Obtener el ID del usuario
         User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado al marcar entrada."));
         
         Long userId = user.getId();
         LocalDateTime now = LocalDateTime.now();
         
-        // --- 2. VALIDACIÓN DE ENTRADA ÚNICA POR DÍA ---
+        // VALIDACIÓN DE ENTRADA ÚNICA POR DÍA (y Sesión Abierta)
         LocalDateTime startOfDay = now.toLocalDate().atStartOfDay();
         LocalDateTime endOfDay = startOfDay.plusDays(1).minusNanos(1); 
         
-        // Busca cualquier registro (abierto o cerrado) para hoy
         List<AttendanceRecord> todayRecords = attendanceRepository.findByUserIdAndEntryTimeBetween(userId, startOfDay, endOfDay);
+        if (!todayRecords.isEmpty()) { return false; } 
         
-        if (!todayRecords.isEmpty()) {
-            // Fallo: ¡Ya marcó ENTRADA hoy!
-            return false; 
-        }
-        
-        // --- 3. Control de Sesión Abierta ---
         List<AttendanceRecord> openRecords = attendanceRepository.findByUserIdAndExitTimeIsNull(userId);
-
-        if (!openRecords.isEmpty()) {
-            // Fallo: Ya tiene una sesión abierta
-            return false; 
-        }
+        if (!openRecords.isEmpty()) { return false; } 
         
-        // 4. Crear el nuevo registro de entrada
         AttendanceRecord record = new AttendanceRecord(userId, user.getUsername(), now);
         attendanceRepository.save(record);
-        return true; // Éxito en la marcación
+        return true;
     }
 
     // U - Lógica para marcar la SALIDA
     public boolean markExit(String userName) {
         
-        // 1. Obtener el ID del usuario
         User user = userRepository.findByUsername(userName)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado al marcar salida."));
         
         Long userId = user.getId();
 
-        // 2. Buscar registros pendientes (Entradas sin Salida)
         List<AttendanceRecord> records = attendanceRepository.findByUserIdAndExitTimeIsNull(userId);
 
         if (!records.isEmpty()) {
-            // 3. Tomar el registro más antiguo/abierto (asumimos que es el primero)
             AttendanceRecord openRecord = records.get(0);
             openRecord.setExitTime(LocalDateTime.now());
             attendanceRepository.save(openRecord);
-            return true; // Éxito
+            return true;
         }
-        return false; // No hay entrada pendiente
+        return false;
     }
     
     // Lógica para generar reportes globales (Ejemplo simple)

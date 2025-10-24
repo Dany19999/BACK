@@ -15,15 +15,18 @@
                 <th>Nombre</th>
                 <th>Hora Entrada</th>
                 <th>Hora Salida</th>
-            </tr>
+                <th>Horas Trabajadas</th> </tr>
         </thead>
         <tbody>
             <tr th:each="record : ${records}">
                 <td th:text="${record.id}">1</td>
-                <td th:text="${record.userId}">1</td>
+                <td th:text="${record.userId}">2</td>
                 <td th:text="${record.userName}">admin</td>
                 <td th:text="${#temporals.format(record.entryTime, 'dd-MM-yyyy HH:mm')}">Fecha</td>
+                
                 <td th:text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM-yyyy HH:mm') : 'Pendiente'}"></td>
+                
+                <td th:text="${record.exitTime != null ? record.durationHours + 'h' : 'N/A'}"></td>
             </tr>
         </tbody>
     </table>

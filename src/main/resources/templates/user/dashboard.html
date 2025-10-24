@@ -63,6 +63,23 @@
             </tr>
         </tbody>
     </table>
+
+    <thead>
+    <tr>
+        <th>Entrada</th>
+        <th>Salida</th>
+        <th>Horas Trabajadas</th> <th>Estado</th>
+    </tr>
+</thead>
+<tbody>
+    <tr th:each="record : ${personalRecords}">
+        <td th-text="${#temporals.format(record.entryTime, 'dd-MM HH:mm')}"></td>
+        <td th-text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM HH:mm') : '---'}"></td>
+        
+        <td th-text="${record.exitTime != null ? record.durationHours + 'h' : '---'}"></td> 
+
+        </tr>
+</tbody>
     <p><a th:href="@{/documents/upload}">Subir Documentos y Trabajos</a></p>
 
     <p th:if="${personalRecords.empty}" style="color: gray;">Aún no tienes registros de asistencia en la base de datos.</p>
