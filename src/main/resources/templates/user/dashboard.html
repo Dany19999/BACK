@@ -14,6 +14,7 @@
         .btn-green { background-color: #198754; color: white; padding: 10px 20px; border: none; cursor: pointer; }
         .btn-red { background-color: #dc3545; color: white; padding: 10px 20px; border: none; cursor: pointer; }
         .btn-grey { background-color: #6c757d; color: white; padding: 5px 15px; border: none; cursor: pointer; }
+        .comunicado-box { border: 1px solid #ccc; padding: 10px; margin-bottom: 15px; }
     </style>
 </head>
 <body>
@@ -21,30 +22,31 @@
     
     <p>Has iniciado sesión como: 
         <span sec:authentication="name"></span> 
-        (<span sec:authentication="authorities"></span>)
+        (Rol: <span sec:authentication="authorities"></span>)
     </p>
 
-    <h2>📢 Anuncios y Comunicados Recientes</h2>
-        <div th:if="${comunicados.empty}">
-        <p>No hay anuncios dirigidos a ti en este momento.</p>
-        </div>
-        <div th:unless="${comunicados.empty}">
-    <div th:each="comunicado : ${comunicados}" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
-        
-        <h4 th:text="${comunicado.titulo}" style="color: darkblue;">Título del Anuncio</h4>
-        
-        <p>
-            <small>Publicado por <strong th-text="${comunicado.autor}"></strong> el 
-            <span th:text="${#temporals.format(comunicado.fechaPublicacion, 'dd-MM-yyyy HH:mm')}"></span></small>
-        </p>
-        
-        <p th:text="${comunicado.contenido}">Contenido del comunicado...</p>
-    </div>
-</div>
-
-    <div th:if="${message}" class="success" th:text="${message}">Mensaje de éxito aquí.</div>
-    <div th:if="${error}" class="error" th:text="${error}">Mensaje de error aquí.</div>
+    <div th:if="${message}" class="success" th:text="${message}"></div>
+    <div th:if="${error}" class="error" th:text="${error}"></div>
     
+    <hr>
+
+    <h2>📢 Anuncios y Comunicados Recientes</h2>
+
+    <div th:if="${comunicados.empty}">
+        <p>No hay anuncios dirigidos a ti en este momento.</p>
+    </div>
+
+    <div th:unless="${comunicados.empty}">
+        <div th:each="comunicado : ${comunicados}" class="comunicado-box">
+            <h4 th:text="${comunicado.titulo}" style="color: darkblue;">Título del Anuncio</h4>
+            <p>
+                <small>Publicado por <strong th:text="${comunicado.autor}"></strong> el 
+                <span th:text="${#temporals.format(comunicado.fechaPublicacion, 'dd-MM-yyyy HH:mm')}"></span></small>
+            </p>
+            <p th:text="${comunicado.contenido}">Contenido del comunicado...</p>
+        </div>
+    </div>
+    <hr>
     
     <h2>Control de Horario</h2>
     
@@ -57,8 +59,6 @@
     </form>
     
     <hr>
-
-    
     
     <h3>Mi Historial de Asistencia</h3>
 
@@ -67,7 +67,7 @@
             <tr>
                 <th>Entrada</th>
                 <th>Salida</th>
-                <th>Estado</th>
+                <th>Horas Trabajadas</th> <th>Estado</th>
             </tr>
         </thead>
         <tbody>
@@ -76,33 +76,21 @@
                 
                 <td th:text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM-yyyy HH:mm') : '---'}"></td>
                 
+                <td th:text="${record.exitTime != null ? record.durationHours + 'h' : '---'}"></td> 
+                
                 <td>
-                    <span th:if="${record.exitTime == null}" class="success">SESIÓN ACTIVA</span>
-                    <span th:if="${record.exitTime != null}" style="color: blue;">Completo</span>
+                    <span th:if="${record.userName.contains('FALTA AUTOMÁTICA')}" class="error">FALTA</span>
+                    <span th:if="${record.exitTime == null and !record.userName.contains('FALTA')}" class="success">SESIÓN ACTIVA</span>
+                    <span th:if="${record.exitTime != null and !record.userName.contains('FALTA')}" style="color: blue;">Completo</span>
                 </td>
             </tr>
         </tbody>
     </table>
 
-    <thead>
-    <tr>
-        <th>Entrada</th>
-        <th>Salida</th>
-        <th>Horas Trabajadas</th> <th>Estado</th>
-    </tr>
-</thead>
-<tbody>
-    <tr th:each="record : ${personalRecords}">
-        <td th-text="${#temporals.format(record.entryTime, 'dd-MM HH:mm')}"></td>
-        <td th-text="${record.exitTime != null ? #temporals.format(record.exitTime, 'dd-MM HH:mm') : '---'}"></td>
-        
-        <td th-text="${record.exitTime != null ? record.durationHours + 'h' : '---'}"></td> 
-
-        </tr>
-</tbody>
+    <p th:if="${personalRecords.empty}" style="color: gray;">Aún no tienes registros de asistencia en la base de datos.</p>
+    
     <p><a th:href="@{/documents/upload}">Subir Documentos y Trabajos</a></p>
 
-    <p th:if="${personalRecords.empty}" style="color: gray;">Aún no tienes registros de asistencia en la base de datos.</p>
     <br><br>
 
     <form th:action="@{/logout}" method="post">
