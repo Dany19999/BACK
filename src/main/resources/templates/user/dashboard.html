@@ -25,20 +25,20 @@
     </p>
 
     <h2>📢 Anuncios y Comunicados Recientes</h2>
-        <div th-if="${comunicados.empty}">
+        <div th:if="${comunicados.empty}">
         <p>No hay anuncios dirigidos a ti en este momento.</p>
         </div>
-        <div th-unless="${comunicados.empty}">
-    <div th-each="comunicado : ${comunicados}" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+        <div th:unless="${comunicados.empty}">
+    <div th:each="comunicado : ${comunicados}" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
         
-        <h4 th-text="${comunicado.titulo}" style="color: darkblue;">Título del Anuncio</h4>
+        <h4 th:text="${comunicado.titulo}" style="color: darkblue;">Título del Anuncio</h4>
         
         <p>
             <small>Publicado por <strong th-text="${comunicado.autor}"></strong> el 
-            <span th-text="${#temporals.format(comunicado.fechaPublicacion, 'dd-MM-yyyy HH:mm')}"></span></small>
+            <span th:text="${#temporals.format(comunicado.fechaPublicacion, 'dd-MM-yyyy HH:mm')}"></span></small>
         </p>
         
-        <p th-text="${comunicado.contenido}">Contenido del comunicado...</p>
+        <p th:text="${comunicado.contenido}">Contenido del comunicado...</p>
     </div>
 </div>
 

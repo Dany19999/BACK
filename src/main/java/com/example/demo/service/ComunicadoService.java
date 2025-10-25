@@ -3,7 +3,6 @@ package com.example.demo.service;
 import java.util.Arrays; // <-- Importación para Arrays
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -44,7 +43,7 @@ public class ComunicadoService {
                 return Arrays.stream(destinatarios.split(","))
                             .anyMatch(id -> id.trim().equals(userIdString));
             })
-            .collect(Collectors.toList());
+            .collect(java.util.stream.Collectors.toList());
     }
 
     // ... (El resto de tus métodos findAll, save, delete) ...
