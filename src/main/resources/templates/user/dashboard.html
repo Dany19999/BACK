@@ -24,6 +24,24 @@
         (<span sec:authentication="authorities"></span>)
     </p>
 
+    <h2>📢 Anuncios y Comunicados Recientes</h2>
+        <div th-if="${comunicados.empty}">
+        <p>No hay anuncios dirigidos a ti en este momento.</p>
+        </div>
+        <div th-unless="${comunicados.empty}">
+    <div th-each="comunicado : ${comunicados}" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 15px;">
+        
+        <h4 th-text="${comunicado.titulo}" style="color: darkblue;">Título del Anuncio</h4>
+        
+        <p>
+            <small>Publicado por <strong th-text="${comunicado.autor}"></strong> el 
+            <span th-text="${#temporals.format(comunicado.fechaPublicacion, 'dd-MM-yyyy HH:mm')}"></span></small>
+        </p>
+        
+        <p th-text="${comunicado.contenido}">Contenido del comunicado...</p>
+    </div>
+</div>
+
     <div th:if="${message}" class="success" th:text="${message}">Mensaje de éxito aquí.</div>
     <div th:if="${error}" class="error" th:text="${error}">Mensaje de error aquí.</div>
     
@@ -39,6 +57,8 @@
     </form>
     
     <hr>
+
+    
     
     <h3>Mi Historial de Asistencia</h3>
 
