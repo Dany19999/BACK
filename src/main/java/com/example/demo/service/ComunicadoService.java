@@ -2,10 +2,11 @@ package com.example.demo.service;
 
 import java.util.Arrays; // <-- Importación para Arrays
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort; 
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.entity.Comunicado;
@@ -41,7 +42,7 @@ public class ComunicadoService {
                 // CASO 2: Filtrado por IDs individuales (Tokenización)
                 // Dividimos la cadena "1,5,9" en tokens y verificamos la igualdad exacta.
                 return Arrays.stream(destinatarios.split(","))
-                             .anyMatch(id -> id.trim().equals(userIdString));
+                            .anyMatch(id -> id.trim().equals(userIdString));
             })
             .collect(Collectors.toList());
     }
@@ -58,4 +59,8 @@ public class ComunicadoService {
     public void delete(Long id) {
         comunicadoRepository.deleteById(id);
     }
+
+    public Optional<Comunicado> findById(Long id) {
+    return comunicadoRepository.findById(id);
+}
 }
