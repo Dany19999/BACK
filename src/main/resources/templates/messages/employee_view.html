@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bandeja de Mensajes y Tickets</title>
+    <style>
+        /* Estilos CSS para el diseño de chat */
+        body { font-family: sans-serif; margin: 20px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
+        h1, h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; }
+        
+        /* Contenedor del Mensaje (Burbuja) */
+        .chat-container { display: flex; flex-direction: column; }
+        .message-box { 
+            max-width: 80%; 
+            padding: 10px 15px; 
+            margin-bottom: 15px; 
+            border-radius: 18px; 
+            position: relative; 
+            font-size: 0.95em; 
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+        }
+        
+        /* Estilo para mensajes del Empleado (Enviado) */
+        .sent { 
+            background-color: #dcf8c6; /* Color de WhatsApp/Enviado */
+            align-self: flex-end; 
+            border-bottom-right-radius: 0;
+            text-align: right;
+        }
+        
+        /* Estilo para mensajes del Administrador (Recibido/Respondido) */
+        .received { 
+            background-color: #e9e9eb; /* Color de WhatsApp/Recibido */
+            align-self: flex-start; 
+            border-bottom-left-radius: 0;
+            text-align: left;
+        }
+        
+        /* Estilos de Estado */
+        .status-pendiente { color: orange; font-weight: bold; }
+        .status-respondido { color: #28a745; font-weight: bold; }
+        
+        /* Estilo del Formulario */
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
+        textarea, input[type="text"] { border: 1px solid #ccc; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Bandeja de Mensajes y Tickets</h1>
+
+        <div th:if="${message}" style="color: green; font-weight: bold;" th:text="${message}"></div>
+        <div th:if="${error}" style="color: red; font-weight: bold;" th:text="${error}"></div>
+
+        <h2>Enviar Nuevo Mensaje al Administrador</h2>
+        
+        <form th:action="@{/user/messages}" th:object="${newMessage}" method="post" class="mb-4">
+            
+            <div class="form-group">
+                <label for="subject">Asunto:</label>
+                <input type="text" id="subject" th:field="*{subject}" required style="width: 100%;">
+            </div>
+            
+            <div class="form-group">
+                <label for="employeeMessage">Contenido del Mensaje:</label>
+                <textarea id="employeeMessage" th:field="*{employeeMessage}" rows="4" required style="width: 100%;"></textarea>
+            </div>
+            
+            <button type="submit" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px;">Enviar Mensaje</button>
+        </form>
+        
+        <hr>
+        
+        <h2>Historial de Conversación</h2>
+
+        <div th:if="${messages.empty}">
+            <p class="text-muted">No tienes mensajes enviados al administrador.</p>
+        </div>
+
+        <div th:unless="${messages.empty}" class="chat-container">
+            <div th:each="msg : ${messages}">
+                
+                <div class="message-box sent">
+                    <p style="font-weight: 600; margin-bottom: 5px;">
+                        Yo <small class="text-muted" th:text="${#temporals.format(msg.sentDate, 'HH:mm')}"></small>
+                    </p>
+                    <p th:text="${msg.employeeMessage}"></p>
+                    <small>Asunto: <span th-text="${msg.subject}"></span></small>
+                    <span th-text="${msg.status}" class="status-pendiente" style="margin-left: 10px; font-size: 0.8em;"></span>
+                </div>
+                
+                <div th:if="${msg.status == 'RESPONDIDO'}" class="message-box received">
+                    <p style="font-weight: 600; color: #075e54; margin-bottom: 5px;">
+                        Admin (<span th:text="${msg.responseDate != null ? #temporals.format(msg.responseDate, 'HH:mm') : ''}"></span>)
+                    </p>
+                    <p th:text="${msg.adminResponse}"></p>
+                    <small th:text="'Revisado por: ' + ${msg.adminResponse}"></small> 
+                </div>
+                
+            </div>
+        </div>
+        
+        <p class="mt-4"><a th:href="@{/user/dashboard}">Volver al Dashboard</a></p>
+    </div>
+</body>
+</html>

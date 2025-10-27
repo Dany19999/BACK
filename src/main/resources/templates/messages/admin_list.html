@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bandeja de Entrada de Tickets</title>
+</head>
+<body>
+    <h1>Mensajes Pendientes de Empleados</h1>
+    
+    <div th:if="${message}" style="color: green;">Mensaje de éxito: <span th:text="${message}"></span></div>
+
+    <table border="1">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Asunto</th>
+                <th>Enviado por</th>
+                <th>Fecha Envío</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="msg : ${messages}">
+                <td th:text="${msg.id}">1</td>
+                <td th:text="${msg.subject}">Problema</td>
+                <td th:text="${msg.employeeUsername}">empleado</td>
+                <td th:text="${#temporals.format(msg.sentDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td>
+                    <a th:href="@{/admin/messages/respond/{id}(id=${msg.id})}">Responder</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <p th:if="${messages.empty}">No hay tickets pendientes de respuesta.</p>
+    <p><a th:href="@{/admin/dashboard}">Volver al Dashboard</a></p>
+</body>
+</html>
