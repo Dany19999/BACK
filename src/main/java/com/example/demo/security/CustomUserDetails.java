@@ -10,7 +10,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import com.example.demo.entity.User;
 
 /**
- * Clase Wrapper para la entidad User. 
+ * Clase Wrapper para la entidad User.
  * Expone las propiedades de la entidad User a Spring Security y Thymeleaf.
  */
 public class CustomUserDetails implements UserDetails {

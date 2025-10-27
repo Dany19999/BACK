@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
-    <title>Panel de Empleado - Asistencia</title>
+    <title>Panel de Empleado - SANTRIX</title>
     <style>
         /* Estilos que definiste */
         body { font-family: sans-serif; margin: 20px; }
@@ -18,11 +18,10 @@
     </style>
 </head>
 <body>
-    <h1>Bienvenido a tu Panel, Empleado</h1>
+    <h1>PANEL EMPLEADOS : SANTRIX</h1>
     
-    <p>Has iniciado sesión como: 
-        <span sec:authentication="name"></span> 
-        (Rol: <span sec:authentication="authorities"></span>)
+    <p>Bienvenido as iniciado sesión como:
+        <span th:text="${userNameDisplay}"></span>
     </p>
 
     <div th:if="${message}" class="success" th:text="${message}"></div>

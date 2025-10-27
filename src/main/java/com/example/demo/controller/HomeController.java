@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.example.demo.entity.AttendanceRecord;
 import com.example.demo.entity.Comunicado;
-import com.example.demo.entity.User; // <-- NUEVA IMPORTACIÓN
+import com.example.demo.entity.User;
 import com.example.demo.service.AttendanceService;
 import com.example.demo.service.ComunicadoService;
-import com.example.demo.service.UserService; // <-- NUEVA IMPORTACIÓN
+import com.example.demo.service.UserService;
 
 @Controller
 public class HomeController {
@@ -25,9 +25,12 @@ public class HomeController {
     @Autowired
     private AttendanceService attendanceService;
     
-    @Autowired // <-- DEPENDENCIA AÑADIDA
+    @Autowired
     private ComunicadoService comunicadoService; 
 
+    // -----------------------------------------------------
+    // 1. RUTA RAÍZ: Maneja la redirección después del login
+    // -----------------------------------------------------
     @GetMapping("/")
     public String home(Authentication auth) {
         if (auth != null && auth.isAuthenticated()) {
@@ -43,24 +46,33 @@ public class HomeController {
         return "redirect:/login";
     }
     
-    // Ruta para el dashboard de usuario
+    // -----------------------------------------------------
+    // 2. DASHBOARD DEL EMPLEADO (/user/dashboard)
+    // -----------------------------------------------------
     @GetMapping("/user/dashboard")
     public String userDashboard(Authentication auth, Model model) {
         
-        // 1. Obtener el usuario completo para su ID
+        // 1. Obtener el nombre del usuario logueado (lo usaremos para el display)
         String userName = auth.getName();
+        
+        // 2. Buscar el objeto User completo para obtener el ID
         User user = userService.findByUsername(userName)
                 .orElseThrow(() -> new RuntimeException("Error: Usuario no encontrado al cargar dashboard."));
         
-        Long userId = user.getId(); // El ID es necesario para los filtros
+        Long userId = user.getId(); 
 
-        // 2. Cargar el historial de asistencia personal
+        // 3. Cargar datos de los módulos
         List<AttendanceRecord> records = attendanceService.findPersonalRecords(userId);
-        model.addAttribute("personalRecords", records);
-
-        // 3. CÓDIGO AÑADIDO: Cargar los comunicados dirigidos a ESTE usuario
         List<Comunicado> comunicados = comunicadoService.findForUser(userId);
-        model.addAttribute("comunicados", comunicados); // <-- PASAMOS LA LISTA FILTRADA AL MODELO
+        
+        // 4. PASAR VARIABLES AL MODELO
+        
+        // SOLUCIÓN AL PROBLEMA VISUAL: Pasar el nombre de usuario explícitamente al modelo
+        model.addAttribute("userNameDisplay", userName); 
+
+        // Pasar datos de Asistencia y Comunicados
+        model.addAttribute("personalRecords", records);
+        model.addAttribute("comunicados", comunicados);
 
         return "user/dashboard"; // templates/user/dashboard.html
     }

@@ -25,6 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // 2. Devuelve la clase CustomUserDetails
         //    Esto expone el nombre de usuario (username) a Thymeleaf de forma segura.
-        return new CustomUserDetails(user); 
+        return new CustomUserDetails(user);
     }
 }
