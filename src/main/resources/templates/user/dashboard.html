@@ -20,7 +20,7 @@
 <body>
     <h1>PANEL EMPLEADOS : SANTRIX</h1>
     
-    <p>Bienvenido iniciado sesión como:
+    <p>Bienvenido de nuevo:
         <span th:text="${userNameDisplay}"></span>
     </p>
 
@@ -94,6 +94,16 @@
     <a th:href="@{/user/messages}" style="font-weight: bold; color: rgb(110, 109, 109);">
         Módulo de Mensajería
     </a>
+
+    <div>
+    <p>
+        <a th:href="@{/user/profile}" style="font-weight: bold; color: darkgreen;">
+            Gestionar Mi Perfil y Foto 🖼️
+        </a>
+    </p>
+
+    </div>
+
 </p>
 
     <br><br>

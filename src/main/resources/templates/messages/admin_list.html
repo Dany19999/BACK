@@ -3,6 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <title>Bandeja de Entrada de Tickets</title>
+    <style>
+        /* Estilos CSS para el diseño */
+        body { font-family: sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        .status-pendiente { background-color: #ffc107; color: #333; padding: 5px; border-radius: 4px; font-weight: bold;}
+    </style>
 </head>
 <body>
     <h1>Mensajes Pendientes de Empleados</h1>
@@ -12,19 +19,24 @@
     <table border="1">
         <thead>
             <tr>
-                <th>ID</th>
+                <th>ID Ticket</th>
                 <th>Asunto</th>
                 <th>Enviado por</th>
                 <th>Fecha Envío</th>
+                <th>Estado</th>
                 <th>Acción</th>
             </tr>
         </thead>
         <tbody>
             <tr th:each="msg : ${messages}">
                 <td th:text="${msg.id}">1</td>
-                <td th:text="${msg.subject}">Problema</td>
-                <td th:text="${msg.employeeUsername}">empleado</td>
+                <td th:text="${msg.subject}">Problema en el sistema</td>
+                <td th:text="${msg.employeeUsername}">empleado1</td>
                 <td th:text="${#temporals.format(msg.sentDate, 'dd-MM-yyyy HH:mm')}"></td>
+                <td>
+                    <span th:if="${msg.status == 'PENDIENTE'}" class="status-pendiente">PENDIENTE</span>
+                    <span th:if="${msg.status == 'RESPONDIDO'}" style="color: green; font-weight: bold;">RESPONDIDO</span>
+                </td>
                 <td>
                     <a th:href="@{/admin/messages/respond/{id}(id=${msg.id})}">Responder</a>
                 </td>

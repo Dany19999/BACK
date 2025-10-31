@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil de Usuario</title>
+</head>
+<body>
+    <div style="max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ccc; border-radius: 8px;">
+        <h1>Mi Perfil de Usuario</h1>
+        
+        <div th:if="${message}" style="color: green;" th:text="${message}"></div>
+        <div th:if="${error}" style="color: red;" th:text="${error}"></div>
+
+        <h2>Foto de Perfil</h2>
+        <img th:src="${user.profilePictureUrl}" alt="Foto de Perfil" style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover;">
+        <br><br>
+
+        <form method="POST" th:action="@{/user/profile/upload}" enctype="multipart/form-data">
+            <input type="file" name="file" required accept="image/*"/> 
+            <button type="submit">Cambiar Foto</button>
+        </form>
+        
+        <div th:if="${user.profilePicture != null and !user.profilePicture.isEmpty()}">
+            <a th:href="@{/user/profile/delete-photo}" 
+               onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto de perfil?');" 
+               style="color: red; margin-top: 10px; display: block;">Eliminar Foto Actual</a>
+        </div>
+        
+        <hr>
+        
+        <h2>Datos del Empleado</h2>
+        <p><strong>Usuario:</strong> <span th:text="${user.username}"></span></p>
+        <p><strong>Cargo:</strong> <span th:text="${user.cargo}"></span></p>
+        <p><strong>Teléfono:</strong> <span th:text="${user.phone}"></span></p>
+
+        <p style="margin-top: 20px;">
+            <a th:href="@{/user/dashboard}">← Volver al Dashboard</a>
+        </p>
+    </div>
+</body>
+</html>

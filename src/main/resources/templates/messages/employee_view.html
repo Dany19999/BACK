@@ -2,106 +2,210 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Bandeja de Mensajes y Tickets</title>
+    <title>Chat con Administración</title>
     <style>
-        /* Estilos CSS para el diseño de chat */
-        body { font-family: sans-serif; margin: 20px; background-color: #f4f7f6; }
-        .container { max-width: 800px; margin: auto; padding: 20px; background-color: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); }
-        h1, h2 { color: #333; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; }
-        
-        /* Contenedor del Mensaje (Burbuja) */
-        .chat-container { display: flex; flex-direction: column; }
-        .message-box { 
-            max-width: 80%; 
-            padding: 10px 15px; 
-            margin-bottom: 15px; 
-            border-radius: 18px; 
-            position: relative; 
-            font-size: 0.95em; 
-            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08);
+        /* Estilos generales para el cuerpo del chat */
+        body { 
+            font-family: Arial, sans-serif; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background-color: #f0f2f5; /* Fondo general más claro */
         }
         
-        /* Estilo para mensajes del Empleado (Enviado) */
-        .sent { 
-            background-color: #dcf8c6; /* Color de WhatsApp/Enviado */
-            align-self: flex-end; 
-            border-bottom-right-radius: 0;
-            text-align: right;
+        /* Contenedor principal del chat (simula la ventana de WhatsApp) */
+        .chat-window {
+            width: 100%;
+            max-width: 600px; /* Ancho máximo para el chat */
+            height: 90vh; /* Altura de la ventana de chat */
+            display: flex;
+            flex-direction: column;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden; /* Para que las burbujas no se salgan */
+            background-color: #ffffff; /* Fondo blanco para la ventana principal */
+        }
+
+        /* Área de conversación (fondo oscuro estilo WhatsApp) */
+        .conversation-area {
+            flex-grow: 1; /* Ocupa todo el espacio disponible */
+            background-color: #202c33; /* Fondo oscuro de chat WhatsApp */
+            padding: 15px;
+            overflow-y: auto; /* Scroll para la conversación */
+            display: flex; /* Para alinear burbujas al final */
+            flex-direction: column;
+        }
+
+        /* Estilo para mensajes de info/feedback */
+        .info-message {
+            text-align: center;
+            color: #ccc;
+            margin: 10px 0;
+            font-size: 0.9em;
         }
         
-        /* Estilo para mensajes del Administrador (Recibido/Respondido) */
-        .received { 
-            background-color: #e9e9eb; /* Color de WhatsApp/Recibido */
-            align-self: flex-start; 
-            border-bottom-left-radius: 0;
-            text-align: left;
+        /* Burbuja de Mensaje */
+        .message-bubble {
+            max-width: 75%;
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            line-height: 1.4;
+            word-wrap: break-word; /* Rompe palabras largas */
+            color: #e9edef; /* Texto blanco para el fondo oscuro */
+            position: relative;
         }
         
-        /* Estilos de Estado */
-        .status-pendiente { color: orange; font-weight: bold; }
-        .status-respondido { color: #28a745; font-weight: bold; }
+        /* Mensaje del Empleado (Enviado - Derecha) */
+        .message-bubble.sent {
+            background-color: #005c4b; /* Verde oscuro de WhatsApp */
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
         
-        /* Estilo del Formulario */
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; }
-        textarea, input[type="text"] { border: 1px solid #ccc; padding: 10px; border-radius: 4px; }
+        /* Mensaje del Administrador (Recibido - Izquierda) */
+        .message-bubble.received {
+            background-color: #2b3b44; /* Gris oscuro de WhatsApp */
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+
+        /* Metadatos (hora, estado) */
+        .message-bubble .metadata {
+            font-size: 0.7em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 5px;
+            display: block;
+            text-align: right; /* Hora a la derecha */
+        }
+        .message-bubble.received .metadata {
+             text-align: left;
+        }
+
+        .status-pendiente { color: #ffc107; font-weight: bold; margin-left: 5px; }
+        .status-respondido { color: #28a745; font-weight: bold; margin-left: 5px; }
+
+        /* Barra de entrada de texto */
+        .input-bar {
+            padding: 10px 15px;
+            background-color: #f0f2f5; /* Fondo de la barra de entrada */
+            display: flex;
+            align-items: center;
+            border-top: 1px solid #e0e0e0;
+        }
+        .input-bar textarea {
+            flex-grow: 1;
+            height: 40px;
+            border-radius: 20px;
+            padding: 10px 15px;
+            border: 1px solid #ccc;
+            margin-right: 10px;
+            resize: none;
+            font-size: 1em;
+            background-color: #ffffff;
+            color: #333;
+        }
+        .input-bar button {
+            background-color: #008069; /* Verde de enviar de WhatsApp */
+            color: white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border: none;
+            cursor: pointer;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .input-bar button:hover {
+            background-color: #006654;
+        }
+
+        /* Encabezado del chat (para el título "Chat con Administración") */
+        .chat-header {
+            background-color: #008069; /* Color de encabezado WhatsApp */
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.2em;
+            font-weight: 500;
+        }
+        
+        /* Mensajes de feedback (éxito/error) */
+        .feedback {
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .feedback.success { background-color: #28a745; }
+        .feedback.error { background-color: #dc3545; }
+
+        /* Botón de volver */
+        .back-link {
+            text-align: center;
+            padding: 10px;
+            background-color: #f0f2f5;
+            border-top: 1px solid #e0e0e0;
+        }
+        .back-link a {
+            color: #007bff;
+            text-decoration: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Bandeja de Mensajes y Tickets</h1>
-
-        <div th:if="${message}" style="color: green; font-weight: bold;" th:text="${message}"></div>
-        <div th:if="${error}" style="color: red; font-weight: bold;" th:text="${error}"></div>
-
-        <h2>Enviar Nuevo Mensaje al Administrador</h2>
-        
-        <form th:action="@{/user/messages}" th:object="${newMessage}" method="post" class="mb-4">
-            
-            <div class="form-group">
-                <label for="subject">Asunto:</label>
-                <input type="text" id="subject" th:field="*{subject}" required style="width: 100%;">
-            </div>
-            
-            <div class="form-group">
-                <label for="employeeMessage">Contenido del Mensaje:</label>
-                <textarea id="employeeMessage" th:field="*{employeeMessage}" rows="4" required style="width: 100%;"></textarea>
-            </div>
-            
-            <button type="submit" style="background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px;">Enviar Mensaje</button>
-        </form>
-        
-        <hr>
-        
-        <h2>Historial de Conversación</h2>
-
-        <div th:if="${messages.empty}">
-            <p class="text-muted">No tienes mensajes enviados al administrador.</p>
+    <div class="chat-window">
+        <div class="chat-header">
+            Chat con Administración
         </div>
 
-        <div th:unless="${messages.empty}" class="chat-container">
+        <div th:if="${message}" class="feedback success" th:text="${message}"></div>
+        <div th:if="${error}" class="feedback error" th:text="${error}"></div>
+        
+        <div class="conversation-area">
+            <div th:if="${messages.empty}" class="info-message">
+                <p>No tienes mensajes enviados en esta conversación.</p>
+            </div>
+
             <div th:each="msg : ${messages}">
                 
-                <div class="message-box sent">
-                    <p style="font-weight: 600; margin-bottom: 5px;">
-                        Yo <small class="text-muted" th:text="${#temporals.format(msg.sentDate, 'HH:mm')}"></small>
-                    </p>
-                    <p th:text="${msg.employeeMessage}"></p>
-                    <small>Asunto: <span th-text="${msg.subject}"></span></small>
-                    <span th-text="${msg.status}" class="status-pendiente" style="margin-left: 10px; font-size: 0.8em;"></span>
+                <div class="message-bubble sent">
+                    <p style="margin: 0;" th:text="${msg.employeeMessage}"></p>
+                    <span class="metadata">
+                        <span th:text="${#temporals.format(msg.sentDate, 'HH:mm')}"></span>
+                        <span th:if="${msg.status != 'RESPONDIDO'}" class="status-pendiente">PENDIENTE</span>
+                    </span>
                 </div>
                 
-                <div th:if="${msg.status == 'RESPONDIDO'}" class="message-box received">
-                    <p style="font-weight: 600; color: #075e54; margin-bottom: 5px;">
-                        Admin (<span th:text="${msg.responseDate != null ? #temporals.format(msg.responseDate, 'HH:mm') : ''}"></span>)
-                    </p>
-                    <p th:text="${msg.adminResponse}"></p>
-                    <small th:text="'Revisado por: ' + ${msg.adminResponse}"></small> 
+                <div th:if="${msg.status == 'RESPONDIDO'}" class="message-bubble received">
+                    <p style="margin: 0;" th:text="${msg.adminResponse}"></p>
+                    <span class="metadata">
+                        <span th:text="${#temporals.format(msg.responseDate, 'HH:mm')}"></span>
+                        <span class="status-respondido">RESPONDIDO</span>
+                    </span>
                 </div>
                 
             </div>
         </div>
         
-        <p class="mt-4"><a th:href="@{/user/dashboard}">Volver al Dashboard</a></p>
+        <form th:action="@{/user/messages}" th:object="${newMessage}" method="post" class="input-bar">
+            
+            <input type="hidden" th:field="*{subject}" value="Mensaje Chat Rápido"> 
+            
+            <textarea id="employeeMessage" th:field="*{employeeMessage}" required placeholder="Escribe un mensaje..." rows="1"></textarea>
+            
+            <button type="submit">➤</button>
+        </form>
+
+        <div class="back-link">
+            <a th:href="@{/user/dashboard}">Volver al Dashboard</a>
+        </div>
     </div>
 </body>
 </html>
