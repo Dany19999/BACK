@@ -33,6 +33,13 @@ public class CustomUserDetails implements UserDetails {
         return user.getPassword();
     }
 
+    private Long id; 
+
+// Debes añadir el método getId()
+    public Long getId() {
+    return id; 
+}
+
     // CLAVE: Devuelve el nombre de usuario de tu entidad, no el genérico de Spring.
     @Override
     public String getUsername() {

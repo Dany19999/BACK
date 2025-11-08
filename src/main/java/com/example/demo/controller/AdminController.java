@@ -39,7 +39,7 @@ public class AdminController {
         // Lógica de contador temporal (sin NotificationService)
         model.addAttribute("unreadCount", 0L); 
         
-        return "dashboard"; 
+        return "dashboard";
     }
 
     // -------------------------------------------------------------------
@@ -104,7 +104,7 @@ public class AdminController {
         model.addAttribute("allUsers", allUsers);
         model.addAttribute("comunicados", comunicadoService.findAll()); // Recargar lista inferior
         
-        return "admin/comunicados/manage"; 
+        return "admin/comunicados/manage";
     }
     
 

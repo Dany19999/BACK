@@ -1,73 +1,78 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Chat con Administración</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
+          rel="stylesheet" 
+          integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
     <style>
-        /* Estilos generales para el cuerpo del chat */
+        /* Estilos generales (usando Bootstrap variables) */
         body { 
-            font-family: Arial, sans-serif; 
-            margin: 0; 
+            background-color: #f0f2f5; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
             min-height: 100vh; 
-            background-color: #f0f2f5; /* Fondo general más claro */
         }
         
-        /* Contenedor principal del chat (simula la ventana de WhatsApp) */
         .chat-window {
             width: 100%;
-            max-width: 600px; /* Ancho máximo para el chat */
-            height: 90vh; /* Altura de la ventana de chat */
+            max-width: 600px;
+            height: 90vh;
             display: flex;
             flex-direction: column;
             border-radius: 8px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            overflow: hidden; /* Para que las burbujas no se salgan */
-            background-color: #ffffff; /* Fondo blanco para la ventana principal */
+            overflow: hidden;
+            background-color: #ffffff;
         }
 
         /* Área de conversación (fondo oscuro estilo WhatsApp) */
         .conversation-area {
-            flex-grow: 1; /* Ocupa todo el espacio disponible */
+            flex-grow: 1;
             background-color: #202c33; /* Fondo oscuro de chat WhatsApp */
             padding: 15px;
-            overflow-y: auto; /* Scroll para la conversación */
-            display: flex; /* Para alinear burbujas al final */
+            overflow-y: auto;
+            display: flex;
             flex-direction: column;
         }
 
-        /* Estilo para mensajes de info/feedback */
-        .info-message {
-            text-align: center;
-            color: #ccc;
-            margin: 10px 0;
-            font-size: 0.9em;
+        /* Encabezado del chat (usamos colores de éxito/verde) */
+        .chat-header {
+            background-color: #008069;
+            color: white;
+            padding: 15px;
+            font-size: 1.2em;
+            font-weight: 500;
         }
-        
-        /* Burbuja de Mensaje */
+
+        /* BURBUJAS DE MENSAJE */
         .message-bubble {
             max-width: 75%;
             padding: 8px 12px;
             margin-bottom: 8px;
             border-radius: 10px;
             line-height: 1.4;
-            word-wrap: break-word; /* Rompe palabras largas */
-            color: #e9edef; /* Texto blanco para el fondo oscuro */
+            color: #e9edef; 
             position: relative;
         }
         
         /* Mensaje del Empleado (Enviado - Derecha) */
         .message-bubble.sent {
-            background-color: #005c4b; /* Verde oscuro de WhatsApp */
+            background-color: #005c4b; /* Verde oscuro */
             align-self: flex-end;
             border-bottom-right-radius: 2px;
         }
         
         /* Mensaje del Administrador (Recibido - Izquierda) */
         .message-bubble.received {
-            background-color: #2b3b44; /* Gris oscuro de WhatsApp */
+            background-color: #2b3b44; /* Gris oscuro */
             align-self: flex-start;
             border-bottom-left-radius: 2px;
         }
@@ -78,116 +83,76 @@
             color: rgba(255, 255, 255, 0.7);
             margin-top: 5px;
             display: block;
-            text-align: right; /* Hora a la derecha */
+            text-align: right;
         }
-        .message-bubble.received .metadata {
-            text-align: left;
-        }
-
-        .status-pendiente { color: #ffc107; font-weight: bold; margin-left: 5px; }
-        .status-respondido { color: #28a745; font-weight: bold; margin-left: 5px; }
 
         /* Barra de entrada de texto */
         .input-bar {
             padding: 10px 15px;
-            background-color: #f0f2f5; /* Fondo de la barra de entrada */
+            background-color: #f0f2f5;
             display: flex;
             align-items: center;
             border-top: 1px solid #e0e0e0;
         }
         .input-bar textarea {
-            flex-grow: 1;
-            height: 40px;
-            border-radius: 20px;
+            /* Usamos form-control de Bootstrap, pero ajustamos la forma */
+            border-radius: 20px !important; 
             padding: 10px 15px;
-            border: 1px solid #ccc;
             margin-right: 10px;
             resize: none;
-            font-size: 1em;
-            background-color: #ffffff;
-            color: #333;
+            height: 40px;
         }
         .input-bar button {
-            background-color: #008069; /* Verde de enviar de WhatsApp */
+            background-color: #008069; 
             color: white;
             border-radius: 50%;
             width: 40px;
             height: 40px;
             border: none;
-            cursor: pointer;
-            font-size: 1.2em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
         .input-bar button:hover {
             background-color: #006654;
         }
-
-        /* Encabezado del chat (para el título "Chat con Administración") */
-        .chat-header {
-            background-color: #008069; /* Color de encabezado WhatsApp */
-            color: white;
-            padding: 15px;
-            text-align: center;
-            font-size: 1.2em;
-            font-weight: 500;
-        }
         
-        /* Mensajes de feedback (éxito/error) */
-        .feedback {
-            padding: 10px;
+        .info-message {
             text-align: center;
-            font-weight: bold;
-            color: white;
-            margin-bottom: 5px;
-        }
-        .feedback.success { background-color: #28a745; }
-        .feedback.error { background-color: #dc3545; }
-
-        /* Botón de volver */
-        .back-link {
-            text-align: center;
-            padding: 10px;
-            background-color: #f0f2f5;
-            border-top: 1px solid #e0e0e0;
-        }
-        .back-link a {
-            color: #007bff;
-            text-decoration: none;
+            color: #ccc;
+            margin: 10px 0;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
     <div class="chat-window">
-        <div class="chat-header">
-            Chat con Administración
+        
+        <div class="chat-header text-center">
+            <i class="bi bi-chat-dots-fill me-2"></i> Chat con Administración
         </div>
 
-        <div th:if="${message}" class="feedback success" th:text="${message}"></div>
-        <div th:if="${error}" class="feedback error" th:text="${error}"></div>
+        <div th:if="${message}" class="alert alert-success m-0 rounded-0" role="alert" th:text="${message}"></div>
+        <div th:if="${error}" class="alert alert-danger m-0 rounded-0" role="alert" th:text="${error}"></div>
         
         <div class="conversation-area">
             <div th:if="${messages.empty}" class="info-message">
-                <p>No tienes mensajes enviados en esta conversación.</p>
+                <p class="m-0">Inicia una nueva conversación con la Administración.</p>
             </div>
 
             <div th:each="msg : ${messages}">
                 
                 <div class="message-bubble sent">
-                    <p style="margin: 0;" th:text="${msg.employeeMessage}"></p>
+                    <p class="m-0" th:text="${msg.employeeMessage}"></p>
                     <span class="metadata">
                         <span th:text="${#temporals.format(msg.sentDate, 'HH:mm')}"></span>
-                        <span th:if="${msg.status != 'RESPONDIDO'}" class="status-pendiente">PENDIENTE</span>
+                        <span th:if="${msg.status != 'RESPONDIDO'}" class="badge bg-warning text-dark ms-1">PENDIENTE</span>
                     </span>
                 </div>
                 
                 <div th:if="${msg.status == 'RESPONDIDO'}" class="message-bubble received">
-                    <p style="margin: 0;" th:text="${msg.adminResponse}"></p>
+                    <p class="m-0" th:text="${msg.adminResponse}"></p>
                     <span class="metadata">
                         <span th:text="${#temporals.format(msg.responseDate, 'HH:mm')}"></span>
-                        <span class="status-respondido">RESPONDIDO</span>
+                        <span class="badge bg-success ms-1">RESPONDIDO</span>
                     </span>
                 </div>
                 
@@ -198,14 +163,26 @@
             
             <input type="hidden" th:field="*{subject}" value="Mensaje Chat Rápido"> 
             
-            <textarea id="employeeMessage" th:field="*{employeeMessage}" required placeholder="Escribe un mensaje..." rows="1"></textarea>
+            <textarea id="employeeMessage" th:field="*{employeeMessage}" 
+                      required placeholder="Escribe un mensaje..." rows="1" 
+                      class="form-control me-2"></textarea>
             
-            <button type="submit">➤</button>
+            <button type="submit" class="btn btn-sm">
+                <i class="bi bi-send-fill"></i>
+            </button>
         </form>
 
-        <div class="back-link">
-            <a th:href="@{/user/dashboard}">Volver al Dashboard</a>
+        <div class="p-3 text-center border-top bg-light">
+            <a th:href="@{/user/dashboard}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-arrow-left-circle-fill me-2"></i> Volver al Dashboard
+            </a>
         </div>
+        
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
+            integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
+            crossorigin="anonymous">
+    </script>
 </body>
 </html>

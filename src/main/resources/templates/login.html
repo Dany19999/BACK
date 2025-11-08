@@ -3,63 +3,220 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Iniciar Sesión</title>
+    <title>Acceso Santrix - Sistema Central</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" 
           rel="stylesheet" 
           integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
           crossorigin="anonymous">
     
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    
     <style>
-        .login-container {
-            max-width: 400px;
-            padding: 30px;
-            margin-top: 10vh; /* Ajusta la posición vertical */
-            box-shadow: 0 4px 8px rgba(0,0,0,.05);
-            border-radius: 0.5rem;
-            background-color: #ffffff;
+        /* Variables de Color y Tema */
+        :root {
+            --santrix-primary: #00bcd4; /* Azul cian brillante */
+            --santrix-bg-dark: #111111; /* Fondo oscuro principal */
+            --form-bg: rgba(0, 0, 0, 0.85); /* Fondo de formulario semi-transparente oscuro */
+            --text-light: #e0e0e0; /* Texto claro */
+            --code-color: #00cc66; /* Color del código verde Matrix */
+            --shadow-focus: 0 0 0 0.25rem rgba(0, 188, 212, 0.4);
         }
-        /* Centrar el contenido de la página */
-        .page-center {
+
+        /* ------------------------------------------- */
+        /* CSS para la Animación de Código (MATRIX) */
+        /* ------------------------------------------- */
+
+        /* Define la animación de caída */
+        @keyframes matrix-code {
+            from { transform: translateY(-100%); opacity: 0.1; }
+            to { transform: translateY(100%); opacity: 1; }
+        }
+
+        .code-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: var(--santrix-bg-dark);
+            z-index: -1;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .code-stream {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Genera el efecto de código con box-shadows */
+        .code-stream span {
+            position: absolute;
+            background-color: transparent;
+            width: 1px;
+            height: 1px;
+            animation: matrix-code linear infinite;
+        }
+
+        /* Crea las múltiples "gotas" de código en la columna */
+        .code-stream span {
+            box-shadow: 
+                0 0 0 var(--code-color), 0 20px 0 var(--code-color), 0 40px 0 var(--code-color),
+                0 60px 0 var(--code-color), 0 80px 0 var(--code-color), 0 100px 0 var(--code-color),
+                0 120px 0 var(--code-color), 0 140px 0 var(--code-color), 0 160px 0 var(--code-color),
+                0 180px 0 var(--code-color);
+            opacity: 0.4;
+        }
+
+        /* Posicionar y variar las columnas (para un efecto de cascada) */
+        .code-stream span:nth-child(2n) { left: calc(2% + 15px); animation-duration: 15s; animation-delay: -3s; }
+        .code-stream span:nth-child(3n) { left: calc(50% + 5px); animation-duration: 18s; animation-delay: -10s; }
+        .code-stream span:nth-child(5n) { left: calc(80% - 20px); animation-duration: 10s; animation-delay: -6s; }
+        .code-stream span:nth-child(7n) { left: calc(15% + 10px); animation-duration: 14s; animation-delay: -1s; }
+        .code-stream span:nth-child(9n) { left: calc(90% - 10px); animation-duration: 16s; animation-delay: -8s; }
+        
+        /* ------------------------------------------- */
+        /* Estilos del Formulario */
+        /* ------------------------------------------- */
+
+        body {
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            background-color: #f8f9fa; /* Fondo gris claro */
+            color: var(--text-light);
+            position: relative;
+        }
+
+        .login-container {
+            max-width: 450px;
+            padding: 45px;
+            background-color: var(--form-bg);
+            border-radius: 1.25rem;
+            box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.5);
+            transition: all 0.3s ease-in-out;
+            z-index: 10;
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            backdrop-filter: blur(5px); /* Desenfoque sutil detrás del formulario */
+        }
+        
+        .login-container:hover {
+            box-shadow: 0 1.5rem 5rem rgba(0, 0, 0, 0.7);
+            transform: translateY(-5px);
+        }
+        
+        .login-title {
+            color: var(--santrix-primary);
+            text-shadow: 0 0 10px rgba(0, 188, 212, 0.8);
+            letter-spacing: 2px;
+            font-size: 2.8rem;
+        }
+
+        .login-subtitle {
+            color: #b0b0b0;
+            font-size: 0.95rem;
+            margin-top: -10px;
+        }
+
+        /* Inputs y Foco */
+        .form-control, .form-select {
+            background-color: rgba(255, 255, 255, 0.08) !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            color: var(--text-light) !important;
+        }
+
+        .form-control:focus {
+            border-color: var(--santrix-primary) !important;
+            box-shadow: var(--shadow-focus) !important;
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        .form-control::placeholder {
+            color: #a0a0a0 !important;
+        }
+
+        /* Botón de Login */
+        .btn-primary {
+            background-color: var(--santrix-primary);
+            border-color: var(--santrix-primary);
+            color: var(--santrix-bg-dark) !important;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0, 188, 212, 0.4);
+            letter-spacing: 1px;
+        }
+        
+        .btn-primary:hover {
+            background-color: #00a4bd;
+            border-color: #00a4bd;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 188, 212, 0.6);
+        }
+        
+        /* Mensajes de Alerta */
+        .alert {
+            background-color: rgba(220, 53, 69, 0.85);
+            color: #ffffff;
+            border-color: rgba(220, 53, 69, 0.7);
+        }
+        .alert .btn-close {
+            filter: invert(1);
         }
     </style>
 </head>
-<body class="page-center">
+<body>
     
+    <div class="code-background">
+        <div class="code-stream">
+            <span th:each="i : ${#numbers.sequence(1, 50)}"></span>
+        </div>
+    </div>
     <div class="login-container">
         
-        <h1 class="text-center mb-4 text-primary">SANTRIX Login</h1>
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold login-title mb-2">SANTRIX</h1>
+            <p class="text-muted login-subtitle">Acceso al Sistema Central :: [Verificación Biometrica]</p>
+        </div>
+        
+        <div th:if="${param.error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> 
+            ERROR:: Credenciales de acceso denegadas.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
         
         <form th:action="@{/login}" method="post">
             
             <div class="mb-3">
-                <label for="username" class="form-label">Nombre de usuario:</label>
+                <label for="username" class="form-label fw-semibold">
+                    <i class="bi bi-person-fill me-1"></i> IDENTIFICADOR DE USUARIO
+                </label>
                 <input type="text" 
-                       class="form-control" 
+                       class="form-control form-control-lg" 
                        id="username" 
                        name="username" 
-                       placeholder="Ingrese su nombre de usuario"
-                       required>
+                       placeholder="ej: usuario_sistema_001"
+                       required
+                       autofocus>
             </div>
 
             <div class="mb-4">
-                <label for="password" class="form-label">Contraseña:</label>
+                <label for="password" class="form-label fw-semibold">
+                    <i class="bi bi-lock-fill me-1"></i> CÓDIGO DE ACCESO
+                </label>
                 <input type="password" 
-                       class="form-control" 
+                       class="form-control form-control-lg" 
                        id="password" 
                        name="password" 
-                       placeholder="Ingrese su contraseña"
+                       placeholder="********"
                        required>
             </div>
 
-            <div class="d-grid gap-2">
-                <button type="submit" class="btn btn-primary btn-lg">
-                    Iniciar Sesión
+            <div class="d-grid gap-2 mt-4">
+                <button type="submit" class="btn btn-primary btn-lg fw-bold">
+                    <i class="bi bi-shield-lock-fill me-2"></i> INICIAR SECUENCIA DE ACCESO
                 </button>
             </div>
         </form>
@@ -68,6 +225,23 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
             integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
             crossorigin="anonymous">
+    </script>
+
+    <script th:inline="none">
+        document.addEventListener('DOMContentLoaded', function() {
+            const codeStream = document.querySelector('.code-stream');
+            // Si el bucle Thymeleaf no se ejecuta (como al ver el HTML localmente), podemos generar más aquí.
+            // Si usas Thymeleaf, la línea de abajo no se necesita.
+            if (codeStream && codeStream.children.length < 10) { 
+                for (let i = 0; i < 50; i++) {
+                    const span = document.createElement('span');
+                    span.style.left = Math.random() * 100 + 'vw';
+                    span.style.animationDuration = (Math.random() * 10 + 8) + 's';
+                    span.style.animationDelay = (Math.random() * -15) + 's';
+                    codeStream.appendChild(span);
+                }
+            }
+        });
     </script>
 </body>
 </html>
